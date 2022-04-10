@@ -3,4 +3,4 @@
 
 新概念Homo遊戲
 
-https://rape.konnakai.me
+https://rape.konnokai.me
