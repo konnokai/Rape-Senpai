@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>雷普先輩</title>
+    <meta itemprop="name" content="雷普先輩" />
+    <meta itemprop="description" content="新概念Homo遊戲" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0, width=device-width,target-densitydpi=device-dpi" />
+	
+	<meta name="author" content="孤之界">
+	<meta name="description" content="雷普先輩">
+
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@Jun112561" />
+	<meta name="twitter:creator" content="@Jun112561" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://rape.konnokai.me" />
+	<meta property="og:title" content="雷普先輩">
+	<meta property="og:description" content="新概念Homo遊戲">
+	<meta property="og:image" content="https://rape.konnokai.me/static/image/ClickBefore.png">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="./static/index.css" rel="stylesheet" type="text/css">
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+    <script src="https://passport.cnblogs.com/scripts/jsencrypt.min.js"></script>
+    <script src="./static/index.js"></script>
+</head>
+
+<body onLoad="init()" oncontextmenu=self.event.returnValue=false>
+    <div id="GameScoreLayer" class="BBOX SHADE bgc1" style="display:none;">
+        <div style="padding:5%;margin-top: 200px;background-color: rgba(125, 181, 216, 0.3);">
+            <div id="GameScoreLayer-text"></div>
+            <div id="GameScoreLayer-score" style="margin:10px 0;">分數</div>
+            <div id="GameScoreLayer-bast">最佳</div>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="replayBtn()">再撅一次</button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="window.open('https://github.com/arcxingye/EatKano')">開源</button>
+        </div>
+    </div>
+    </div>
+    <div id="welcome" class="SHADE BOX-M">
+        <div class="welcome-bg FILL"></div>
+        <div class="FILL BOX-M" style="position:absolute;top:0;left:0;right:0;bottom:0;z-index:5;">
+            <div style="margin:0 8% 0 9%;">
+                <div style="font-size:2.6em; color:#FEF002;">新概念Homo遊戲</div><br />
+                <div style="font-size:2.2em; color:#fff; line-height:1.5em;">
+                    從最底下的先輩開始<br />
+                    看看你20秒能雷普多少個<br />
+					繁中 by 孤之界<br />
+                </div>
+                <br />
+                <div id="btn_group" style="display: block;">
+                    <button type="button" id="ready-btn" class="btn btn-primary loading btn-lg">點擊開始</button>
+                    <br /><br />
+                    <button type="button" class="btn btn-secondary btn-lg" onclick="show_setting()">遊戲設定</button>
+                </div>
+                <div id="setting" style="display: none;">
+                    <!-- 無排行榜功能 -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">按鍵</span>
+                        </div>
+                        <input type="text" id="keyboard" class="form-control" maxlength=4 placeholder="預設為DFJK">
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-lg" onclick="show_btn();save_cookie();">完成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
