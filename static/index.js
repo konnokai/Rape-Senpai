@@ -1,18 +1,19 @@
 const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
 (function(w) {
-    function getJsonI18N() {
-        return $.ajax({
-            url: `./static/i18n/zh.json`,
-            dataType: 'json',
-            method: 'GET',
-            async: false,
-            success: data => res = data,
-            error: () => alert('找不到語言文件: ' + lang)
-        }).responseJSON
-    }
+    function getJsonI18N(lang = 'zh') {
+    return $.ajax({
+        url: `./static/i18n/${lang}.json`,
+        dataType: 'json',
+        method: 'GET',
+        async: false,
+        success: data => res = data,
+        error: () => alert('找不到語言文件: ' + lang)
+    }).responseJSON
+}
 
-    const I18N = getJsonI18N()
+    const userLang = (navigator.language || navigator.userLanguage).startsWith('ja') ? 'ja' : 'zh';
+    const I18N = getJsonI18N(userLang);
 
     $('[data-i18n]').each(function() {
         const content = I18N[this.dataset.i18n];
