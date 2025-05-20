@@ -254,25 +254,27 @@ body {
 }
 
 #btn_group {
-    width: 37.5%;
-    max-width: 200px;
-}
-
-@media (max-width: 450px) {
-    #btn_group {
-        max-width: 110px !important;
+    & > div {
+        width: max-content;
+        min-width: calc(min(37.5%, 200px));
     }
-}
 
-@media (max-width: 600px) {
-    #btn_group {
-        max-width: 125px;
+    @media (max-width: 450px) {
+        & > div {
+            min-width: calc(min(37.5%, 110px));
+        }
     }
-}
 
-@media (max-width: 800px) {
-    #btn_group {
-        max-width: 150px;
+    @media (max-width: 600px) {
+        & > div {
+            min-width: calc(min(37.5%, 125px));
+        }
+    }
+
+    @media (max-width: 800px) {
+        & > div {
+            min-width: calc(min(37.5%, 150px));
+        }
     }
 }
 
