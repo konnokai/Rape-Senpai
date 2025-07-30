@@ -17,7 +17,7 @@
   "game-intro2": "",
   "game-intro3": "",
   "hint-keyboard-support": "(キーボード操作に対応！ゲーム設定ボタンからキーを確認・変更できます!!)",
-  "hint-pointer-support": "(マウスまたはスマホのタップでも遊べます。)",
+  "hint-pointer-support": "",
   "time-up": "時間切れ！",
   "calculating": "計算中",
   "score": "スコア",
