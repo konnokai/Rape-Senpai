@@ -1,8 +1,8 @@
 {
   "lang": "日本語",
   "start": "ゲーム開始",
-  "normal": "ノーマルモード",
-  "endless": "エンドレスモード",
+  "normal": "ノーマル",
+  "endless": "エンドレス",
   "practice": "練習モード",
   "settings": "ゲーム設定",
   "sound-on": "サウンド：オン",
