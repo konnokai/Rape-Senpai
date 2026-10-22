@@ -302,9 +302,9 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
     function gameLayerMoveNextRow() {
         const now = performance.now();
-        // Finish each step before the next expected tap. Rapid input gets a
-        // shorter transition instead of building up a visual backlog.
-        const duration = lastRowMoveAt ? Math.min(100, (now - lastRowMoveAt) * 0.75) : 100;
+        // Keep enough motion for several rendered frames even during a burst.
+        // Shorten slower transitions as taps speed up without snapping rows.
+        const duration = lastRowMoveAt ? Math.max(80, Math.min(140, (now - lastRowMoveAt) * 0.9)) : 140;
         lastRowMoveAt = now;
         for (let i = 0; i < GameLayer.length; i++) {
             let g = GameLayer[i];
