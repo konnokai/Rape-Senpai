@@ -555,7 +555,8 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         let id = p.id.substring(0, 11) + num;
 
         let fakeEvent = {
-            clientX: ((index - 1) * blockSize + index * blockSize) / 2 + body.offsetLeft,
+            // 要跟 gameTapEvent 用同一個基準；觸控版 body 置中時 offsetLeft 永遠是 0
+            clientX: ((index - 1) * blockSize + index * blockSize) / 2 + body.getBoundingClientRect().left,
             // Make sure that it is in the area
             clientY: (touchArea[0] + touchArea[1]) / 2,
             target: document.getElementById(id),
