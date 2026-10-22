@@ -142,19 +142,22 @@ body {
     background-position: center;
 }
 
-/* Keep the face visible while a successful tile moves. */
 .t1,
 .t2,
 .t3,
 .t4,
-.t5,
+.t5 {
+    background-size: auto 100%;
+    background-image: url(./image/ClickBefore.png);
+}
+
+/* A tapped face leaves the board while its row continues moving. */
 .tt1,
 .tt2,
 .tt3,
 .tt4,
 .tt5 {
-    background-size: auto 100%;
-    background-image: url(./image/ClickBefore.png);
+    background-image: none;
 }
 
 .bl {
