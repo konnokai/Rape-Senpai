@@ -26,13 +26,15 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
     $('html').attr('lang', I18N['lang']);
 
-    // iPadOS Safari can report a desktop user agent, so use touch capability
-    // instead of the user agent to select the full-width touch layout.
+    // iPadOS Safari can report a desktop user agent, so detect touch support.
     let isDesktop = !('ontouchstart' in window || navigator.maxTouchPoints > 0);
     document.write('<style type="text/css">' +
         'html,body {font-size:20px;}@media (max-width:640px) {html,body {font-size:3.125vmin;}}' +
         (isDesktop ? '#welcome,#GameTimeLayer,#GameLayerBG,#GameScoreLayer.SHADE{position: absolute;}' :
-            '#welcome,#GameTimeLayer,#GameLayerBG,#GameScoreLayer.SHADE{position:fixed;}@media screen and (orientation:landscape) {#landscape {display: box; display: -webkit-box; display: -moz-box; display: -ms-flexbox;}}') +
+            'body{width:100%;max-width:640px;margin:0 auto;position:relative;}' +
+            '#welcome,#GameScoreLayer.SHADE{position:fixed;}' +
+            '#GameTimeLayer,#GameLayerBG{position:absolute;}' +
+            '@media screen and (orientation:landscape) {#landscape {display: box; display: -webkit-box; display: -moz-box; display: -ms-flexbox;}}') +
         '</style>');
     let map = {'d': 1, 'f': 2, 'j': 3, 'k': 4};
     if (isDesktop) {
@@ -50,6 +52,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         GameTimeLayer;
     let transform, transitionDuration, welcomeLayerClosed;
     let lastTapSoundAt = -Infinity;
+    let lastRowMoveAt = 0;
 
     let mode = getMode();
 
@@ -195,6 +198,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         _gameStart = false;
         _gameTimeNum = _gameSettingNum;
         _gameStartTime = 0;
+        lastRowMoveAt = 0;
         countBlockSize();
         refreshGameLayer(GameLayer[0]);
         refreshGameLayer(GameLayer[1], 1);
@@ -297,12 +301,18 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
     }
 
     function gameLayerMoveNextRow() {
+        const now = performance.now();
+        // Finish each step before the next expected tap. Rapid input gets a
+        // shorter transition instead of building up a visual backlog.
+        const duration = lastRowMoveAt ? Math.min(100, (now - lastRowMoveAt) * 0.75) : 100;
+        lastRowMoveAt = now;
         for (let i = 0; i < GameLayer.length; i++) {
             let g = GameLayer[i];
             g.y += blockSize;
             if (g.y > blockSize * (Math.floor(g.children.length / 4))) {
                 refreshGameLayer(g, 1, -1);
             } else {
+                g.style[transitionDuration] = duration + 'ms';
                 g.style[transform] = 'translate3D(0,' + g.y + 'px,0)';
             }
         }
@@ -313,8 +323,9 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             return false;
         }
         let tar = e.target;
-        let y = e.clientY || e.targetTouches[0].clientY,
-            x = (e.clientX || e.targetTouches[0].clientX) - body.offsetLeft,
+        let point = e.targetTouches ? e.targetTouches[0] : e;
+        let y = point.clientY,
+            x = point.clientX - body.getBoundingClientRect().left,
             p = _gameBBList[_gameBBListIndex];
         if (y > touchArea[0] || y < touchArea[1]) {
             return false;
