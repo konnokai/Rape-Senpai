@@ -142,6 +142,7 @@ body {
     background-position: center;
 }
 
+/* Keep the face visible while a successful tile moves. */
 .t1,
 .t2,
 .t3,
