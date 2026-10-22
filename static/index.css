@@ -146,18 +146,14 @@ body {
 .t2,
 .t3,
 .t4,
-.t5 {
-    background-size: auto 100%;
-    background-image: url(./image/ClickBefore.png);
-}
-
+.t5,
 .tt1,
 .tt2,
 .tt3,
 .tt4,
 .tt5 {
-    background-size: auto 86%;
-    background-image: url(./image/AfterClicking.png);
+    background-size: auto 100%;
+    background-image: url(./image/ClickBefore.png);
 }
 
 .bl {
