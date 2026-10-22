@@ -151,13 +151,13 @@ body {
     background-image: url(./image/ClickBefore.png);
 }
 
+/* A tapped face leaves the board while its row continues moving. */
 .tt1,
 .tt2,
 .tt3,
 .tt4,
 .tt5 {
-    background-size: auto 86%;
-    background-image: url(./image/AfterClicking.png);
+    background-image: none;
 }
 
 .bl {
