@@ -26,21 +26,24 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
 
     $('html').attr('lang', I18N['lang']);
 
-    let isDesktop = !navigator['userAgent'].match(/(ipad|iphone|ipod|android|windows phone)/i);
-    let fontunit = isDesktop ? 20 : ((window.innerWidth > window.innerHeight ? window.innerHeight : window.innerWidth) / 320) * 10;
+    // iPadOS Safari can report a desktop user agent, so detect touch support.
+    let isDesktop = !('ontouchstart' in window || navigator.maxTouchPoints > 0);
     document.write('<style type="text/css">' +
-        'html,body {font-size:' + (fontunit < 30 ? fontunit : '30') + 'px;}' +
+        'html,body {font-size:20px;}@media (max-width:640px) {html,body {font-size:3.125vmin;}}' +
         (isDesktop ? '#welcome,#GameTimeLayer,#GameLayerBG,#GameScoreLayer.SHADE{position: absolute;}' :
-            '#welcome,#GameTimeLayer,#GameLayerBG,#GameScoreLayer.SHADE{position:fixed;}@media screen and (orientation:landscape) {#landscape {display: box; display: -webkit-box; display: -moz-box; display: -ms-flexbox;}}') +
+            'body{width:100%;max-width:640px;margin:0 auto;position:relative;}' +
+            '#welcome,#GameScoreLayer.SHADE{position:fixed;}' +
+            '#GameTimeLayer,#GameLayerBG{position:absolute;}' +
+            '@media screen and (orientation:landscape) {#landscape {display: box; display: -webkit-box; display: -moz-box; display: -ms-flexbox;}}') +
         '</style>');
     let map = {'d': 1, 'f': 2, 'j': 3, 'k': 4};
     if (isDesktop) {
         document.write('<div id="gameBody">');
-        document.onkeydown = function (e) {
-            let key = e.key.toLowerCase();
-            if (Object.keys(map).indexOf(key) !== -1) {
-                click(map[key])
-            }
+    }
+    document.onkeydown = function (e) {
+        let key = e.key.toLowerCase();
+        if (Object.keys(map).indexOf(key) !== -1) {
+            click(map[key]);
         }
     }
 
@@ -48,6 +51,8 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         GameLayerBG, touchArea = [],
         GameTimeLayer;
     let transform, transitionDuration, welcomeLayerClosed;
+    let lastTapSoundAt = -Infinity;
+    let lastRowMoveAt = 0;
 
     let mode = getMode();
 
@@ -193,6 +198,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         _gameStart = false;
         _gameTimeNum = _gameSettingNum;
         _gameStartTime = 0;
+        lastRowMoveAt = 0;
         countBlockSize();
         refreshGameLayer(GameLayer[0]);
         refreshGameLayer(GameLayer[1], 1);
@@ -287,30 +293,26 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
                 r.notEmpty = false;
             }
         }
-        if (loop) {
-            box.style.webkitTransitionDuration = '0ms';
-            box.style.display = 'none';
-            box.y = -blockSize * (Math.floor(box.children.length / 4) + (offset || 0)) * loop;
-            setTimeout(function () {
-                box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
-                setTimeout(function () {
-                    box.style.display = 'block';
-                }, 100);
-            }, 200);
-        } else {
-            box.y = 0;
-            box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
-        }
-        box.style[transitionDuration] = '150ms';
+        // Keep both layers visible. Delayed recycling can hide both layers when
+        // the player taps faster than the timers, leaving the board blank.
+        box.style[transitionDuration] = '0ms';
+        box.y = loop ? -blockSize * (Math.floor(box.children.length / 4) + (offset || 0)) * loop : 0;
+        box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
     }
 
     function gameLayerMoveNextRow() {
+        const now = performance.now();
+        // Keep enough motion for several rendered frames even during a burst.
+        // Shorten slower transitions as taps speed up without snapping rows.
+        const duration = lastRowMoveAt ? Math.max(80, Math.min(140, (now - lastRowMoveAt) * 0.9)) : 140;
+        lastRowMoveAt = now;
         for (let i = 0; i < GameLayer.length; i++) {
             let g = GameLayer[i];
             g.y += blockSize;
             if (g.y > blockSize * (Math.floor(g.children.length / 4))) {
                 refreshGameLayer(g, 1, -1);
             } else {
+                g.style[transitionDuration] = duration + 'ms';
                 g.style[transform] = 'translate3D(0,' + g.y + 'px,0)';
             }
         }
@@ -321,8 +323,9 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             return false;
         }
         let tar = e.target;
-        let y = e.clientY || e.targetTouches[0].clientY,
-            x = (e.clientX || e.targetTouches[0].clientX) - body.offsetLeft,
+        let point = e.targetTouches ? e.targetTouches[0] : e;
+        let y = point.clientY,
+            x = point.clientX - body.getBoundingClientRect().left,
             p = _gameBBList[_gameBBListIndex];
         if (y > touchArea[0] || y < touchArea[1]) {
             return false;
@@ -332,8 +335,10 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             if (!_gameStart) {
                 gameStart();
             }
-            if (soundMode === 'on') {
+            const now = performance.now();
+            if (soundMode === 'on' && now - lastTapSoundAt >= 60) {
                 createjs.Sound.play("tap");
+                lastTapSoundAt = now;
             }
             tar = document.getElementById(p.id);
             tar.className = tar.className.replace(_ttreg, ' tt$1');

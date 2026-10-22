@@ -125,12 +125,14 @@ body {
     bottom: 0;
     overflow: hidden;
     background: #fff;
+    touch-action: none;
 }
 
 .GameLayer {
     position: absolute;
     bottom: 0;
     left: 0;
+    transition-timing-function: linear;
 }
 
 .block {
@@ -155,7 +157,7 @@ body {
 .tt4,
 .tt5 {
     background-size: auto 86%;
-    background-image: url(./image/ClickAfter.png);
+    background-image: url(./image/AfterClicking.png);
 }
 
 .bl {
@@ -239,7 +241,8 @@ body {
 
 #gameBody {
     position: relative;
-    width: 640px;
+    width: 100%;
+    max-width: 640px;
     margin: 0 auto;
 }
 
