@@ -48,6 +48,7 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
         GameLayerBG, touchArea = [],
         GameTimeLayer;
     let transform, transitionDuration, welcomeLayerClosed;
+    let lastTapSoundAt = -Infinity;
 
     let mode = getMode();
 
@@ -287,21 +288,11 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
                 r.notEmpty = false;
             }
         }
-        if (loop) {
-            box.style.webkitTransitionDuration = '0ms';
-            box.style.display = 'none';
-            box.y = -blockSize * (Math.floor(box.children.length / 4) + (offset || 0)) * loop;
-            setTimeout(function () {
-                box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
-                setTimeout(function () {
-                    box.style.display = 'block';
-                }, 100);
-            }, 200);
-        } else {
-            box.y = 0;
-            box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
-        }
-        box.style[transitionDuration] = '150ms';
+        // Keep both layers visible. Delayed recycling can hide both layers when
+        // the player taps faster than the timers, leaving the board blank.
+        box.style[transitionDuration] = '0ms';
+        box.y = loop ? -blockSize * (Math.floor(box.children.length / 4) + (offset || 0)) * loop : 0;
+        box.style[transform] = 'translate3D(0,' + box.y + 'px,0)';
     }
 
     function gameLayerMoveNextRow() {
@@ -332,8 +323,10 @@ const MODE_NORMAL = 1, MODE_ENDLESS = 2, MODE_PRACTICE = 3;
             if (!_gameStart) {
                 gameStart();
             }
-            if (soundMode === 'on') {
+            const now = performance.now();
+            if (soundMode === 'on' && now - lastTapSoundAt >= 60) {
                 createjs.Sound.play("tap");
+                lastTapSoundAt = now;
             }
             tar = document.getElementById(p.id);
             tar.className = tar.className.replace(_ttreg, ' tt$1');
